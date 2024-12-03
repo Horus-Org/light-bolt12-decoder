@@ -63,6 +63,7 @@ const TAGCODES = {
   offer_issuer_id: 3,
   offer_issuer_node_id: 4,
   offer_issuer_signature: 5,
+  onion_message: 10,
   invoice_request: 7,
   invreq_metadata: 8,
   payment_hash: 3,
