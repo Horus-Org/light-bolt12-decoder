@@ -3,6 +3,13 @@ const { bech32, hex, utf8 } = require('@scure/base');
 // BOLT12-specific constants
 const TAGCODES = {
   offer_id: 1,
+  path_offer: 2,
+  offer_issuer_id: 3,
+  offer_issuer_node_id: 4,
+  offer_issuer_signature: 5,
+  invoice_request: 7,
+  invreq_metadata: 8,
+  payment_hash: 3,
   description: 13,
   issuer: 18, // New for BOLT12
   quantity_min: 22, // Min quantity (e.g., for recurring offers)
@@ -14,6 +21,7 @@ const TAGCODES = {
   fallback_address: 9,
   node_id: 6,
   signature: 16,
+  tutstanding: 24, // Total value locked (TVL) outstanding
 };
 
 // Reverse TAGCODES for decoding

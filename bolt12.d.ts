@@ -58,6 +58,14 @@ const MAX_MILLISATS = BigInt('2100000000000000000');
 const MILLISATS_PER_BTC = BigInt(1e11);
 
 const TAGCODES = {
+  offer_id: 1,
+  path_offer: 2,
+  offer_issuer_id: 3,
+  offer_issuer_node_id: 4,
+  offer_issuer_signature: 5,
+  invoice_request: 7,
+  invreq_metadata: 8,
+  payment_hash: 3,
   payment_hash: 1,
   payment_secret: 16,
   description: 13,
@@ -154,7 +162,13 @@ function featureBitsParser(words) {
     bools.push(false);
   }
 
-  const featureBits = {};
+  const featureBits: {
+    [key: string]: string | {
+      start_bit: number;
+      bits: boolean[];
+      has_required: boolean;
+    };
+  } = {};
 
   FEATUREBIT_ORDER.forEach((featureName, index) => {
     let status;
@@ -181,7 +195,6 @@ function featureBitsParser(words) {
 
   return featureBits;
 }
-
 function hrpToMillisat(hrpString, outputString) {
   let divisor, value;
   if (hrpString.slice(-1).match(/^[munp]$/)) {
