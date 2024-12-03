@@ -1,5 +1,5 @@
 
-# light-bolt11-decoder
+# Light BOLT12 Decoder
 
 A lightweight and naïve library for decoding lightning network payment requests as defined in [BOLT #12](https://github.com/lightning/bolts/blob/master/12-offer-encoding.md).
 
