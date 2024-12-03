@@ -221,5 +221,7 @@ function hrpToMillisat(hrpString, outputString) {
   ) {
     throw new Error('Amount is outside of valid range');
   }
-
-  return outputString ? millisatoshisBN.toString
+  if (millisatoshisBN < 0) {
+    throw new Error('Amount is outside of valid range');
+  }
+  return outputString ? millisatoshisBN.toString() : millisatoshisBN;
