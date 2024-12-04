@@ -6,7 +6,7 @@
   "types": "bolt12.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Horus-Org/light-bolt12-decoer.git"
+    "url": "git+https://github.com/Horus-Org/light-bolt12-decoder.git"
   },
   "keywords": [
     "invoice",
