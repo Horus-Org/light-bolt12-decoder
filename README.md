@@ -1,4 +1,3 @@
-GM
 # Light BOLT12 Decoder :zap:
 
 [![NPM version](https://img.shields.io/npm/v/light-bolt12-decoder.svg)](https://www.npmjs.com/package/light-bolt12-decoder)
