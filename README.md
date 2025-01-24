@@ -11,6 +11,7 @@ Spits out "sections" of the invoice, in a way that is used to make visualization
 The dependencies are minimal: no `Buffer`, only [`@scure/base`](https://github.com/paulmillr/scure-base).
 
 ## Installation
+
 You can install this package using `npm` or `yarn`:
 
 ```
