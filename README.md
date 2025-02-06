@@ -24,4 +24,4 @@ npm install light-bolt12-decoder
 
 ## Roadmap
 
-- [ ] Fix bugs and add tests
+- [x] Fix bugs and add tests
