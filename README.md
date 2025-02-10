@@ -21,7 +21,3 @@ yarn add light-bolt12-decoder
 ```
 npm install light-bolt12-decoder
 ```
-
-## Roadmap
-
-- [x] Fix bugs and add tests
