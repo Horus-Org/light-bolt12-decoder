@@ -80,7 +80,7 @@ function decode(offerRequest) {
   const prefix = decoded.prefix;
   let words = decoded.words;
 
-  // Parse tags
+  // Parse tags without checking signatures
   while (words.length > 0) {
     const tagCode = words[0].toString();
     const tagName = TAGNAMES[tagCode] || 'unknown_tag';
