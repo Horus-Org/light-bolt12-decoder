@@ -21,3 +21,8 @@ yarn add light-bolt12-decoder
 ```
 npm install light-bolt12-decoder
 ```
+
+## Roadmap
+
+- [ ] WASM compatible
+- [ ] PWA
