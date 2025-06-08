@@ -24,5 +24,4 @@ npm install light-bolt12-decoder
 
 ## Roadmap
 
-- [ ] WASM compatible
-- [ ] PWA
+- [x] WASM compatible & PWA 
