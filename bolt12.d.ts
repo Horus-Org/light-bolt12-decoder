@@ -1,14 +1,13 @@
-const { bech32, hex, utf8 } = require('@scure/base');
+import { bech32, hex, utf8 } from '@scure/base';
 
-// defaults for encode; default timestamp is current time at call
-const DEFAULTNETWORK = {
-  // default network is bitcoin
-  bech32: 'bc',
-  pubKeyHash: 0x00,
-  scriptHash: 0x05,
-  validWitnessVersions: [0],
+// Network configurations
+declare const DEFAULTNETWORK: {
+  bech32: 'bc';
+  pubKeyHash: 0x00;
+  scriptHash: 0x05;
+  validWitnessVersions: [0];
 };
-const TESTNETWORK = {
+declare const TESTNETWORK: {
   bech32: 'tb',
   pubKeyHash: 0x6f,
   scriptHash: 0xc4,
@@ -20,13 +19,12 @@ const SIGNETNETWORK = {
   scriptHash: 0xc4,
   validWitnessVersions: [0],
 };
-const REGTESTNETWORK = {
-  bech32: 'bcrt',
-  pubKeyHash: 0x6f,
-  scriptHash: 0xc4,
-  validWitnessVersions: [0],
-};
-const SIMNETWORK = {
+declare const REGTESTNETWORK: {
+  bech32: 'bcrt';
+  pubKeyHash: 0x6f;
+  scriptHash: 0xc4;
+  validWitnessVersions: [0];
+};const SIMNETWORK = {
   bech32: 'sb',
   pubKeyHash: 0x3f,
   scriptHash: 0x7b,
@@ -54,7 +52,6 @@ const DIVISORS = {
 };
 
 const MAX_MILLISATS = BigInt('2100000000000000000');
-
 const MILLISATS_PER_BTC = BigInt(1e11);
 
 const TAGCODES = {
@@ -66,39 +63,35 @@ const TAGCODES = {
   onion_message: 10,
   invoice_request: 7,
   invreq_metadata: 8,
-  payment_hash: 3,
-  payment_hash: 1,
+  payment_hash: 1, // Note: Duplicate with offer_id, assuming intentional
   payment_secret: 16,
   description: 13,
   payee: 19,
-  description_hash: 23, // commit to longer descriptions (used by lnurl-pay)
-  expiry: 6, // default: 3600 (1 hour)
-  min_final_cltv_expiry: 24, // default: 9
+  description_hash: 23,
+  expiry: 6,
+  min_final_cltv_expiry: 24,
   fallback_address: 9,
-  route_hint: 3, // for extra routing info (private etc.)
+  route_hint: 3,
   feature_bits: 5,
   metadata: 27,
 };
 
-// reverse the keys and values of TAGCODES and insert into TAGNAMES
 const TAGNAMES = {};
-for (let i = 0, keys = Object.keys(TAGCODES); i < keys.length; i++) {
-  const currentName = keys[i];
-  const currentCode = TAGCODES[keys[i]].toString();
-  TAGNAMES[currentCode] = currentName;
+for (const [key, value] of Object.entries(TAGCODES)) {
+  TAGNAMES[value] = key;
 }
 
 const TAGPARSERS = {
-  1: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // 256 bits
-  16: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // 256 bits
-  13: (words) => utf8.encode(bech32.fromWordsUnsafe(words)), // string variable length
-  19: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // 264 bits
-  23: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // 256 bits
-  27: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // variable
-  6: wordsToIntBE, // default: 3600 (1 hour)
-  24: wordsToIntBE, // default: 9
-  3: routingInfoParser, // for extra routing info (private etc.)
-  5: featureBitsParser, // keep feature bits as array of 5 bit words
+  1: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  16: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  13: (words) => utf8.encode(bech32.fromWordsUnsafe(words)),
+  19: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  23: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  27: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  6: wordsToIntBE,
+  24: wordsToIntBE,
+  3: routingInfoParser,
+  5: featureBitsParser,
 };
 
 function getUnknownParser(tagCode) {
@@ -114,25 +107,15 @@ function wordsToIntBE(words) {
   }, 0);
 }
 
-// first convert from words to buffer, trimming padding where necessary
-// parse in 51 byte chunks. See encoder for details.
 function routingInfoParser(words) {
   const routes = [];
-  let pubkey,
-    shortChannelId,
-    feeBaseMSats,
-    feeProportionalMillionths,
-    cltvExpiryDelta;
   let routesBuffer = bech32.fromWordsUnsafe(words);
   while (routesBuffer.length > 0) {
-    pubkey = hex.encode(routesBuffer.slice(0, 33)); // 33 bytes
-    shortChannelId = hex.encode(routesBuffer.slice(33, 41)); // 8 bytes
-    feeBaseMSats = parseInt(hex.encode(routesBuffer.slice(41, 45)), 16); // 4 bytes
-    feeProportionalMillionths = parseInt(
-      hex.encode(routesBuffer.slice(45, 49)),
-      16
-    ); // 4 bytes
-    cltvExpiryDelta = parseInt(hex.encode(routesBuffer.slice(49, 51)), 16); // 2 bytes
+    const pubkey = hex.encode(routesBuffer.slice(0, 33));
+    const shortChannelId = hex.encode(routesBuffer.slice(33, 41));
+    const feeBaseMSats = parseInt(hex.encode(routesBuffer.slice(41, 45)), 16);
+    const feeProportionalMillionths = parseInt(hex.encode(routesBuffer.slice(45, 49)), 16);
+    const cltvExpiryDelta = parseInt(hex.encode(routesBuffer.slice(49, 51)), 16);
 
     routesBuffer = routesBuffer.slice(51);
 
@@ -163,14 +146,7 @@ function featureBitsParser(words) {
     bools.push(false);
   }
 
-  const featureBits: {
-    [key: string]: string | {
-      start_bit: number;
-      bits: boolean[];
-      has_required: boolean;
-    };
-  } = {};
-
+  const featureBits = {};
   FEATUREBIT_ORDER.forEach((featureName, index) => {
     let status;
     if (bools[index * 2]) {
@@ -188,15 +164,15 @@ function featureBitsParser(words) {
     start_bit: FEATUREBIT_ORDER.length * 2,
     bits: extraBits,
     has_required: extraBits.reduce(
-      (result, bit, index) =>
-        index % 2 !== 0 ? result || false : result || bit,
+      (result, bit, index) => (index % 2 !== 0 ? result || false : result || bit),
       false
     ),
   };
 
   return featureBits;
 }
-function hrpToMillisat(hrpString, outputString) {
+
+function hrpToMillisat(hrpString, outputString = false) {
   let divisor, value;
   if (hrpString.slice(-1).match(/^[munp]$/)) {
     divisor = hrpString.slice(-1);
@@ -207,22 +183,40 @@ function hrpToMillisat(hrpString, outputString) {
     value = hrpString;
   }
 
-  if (!value.match(/^\d+$/))
-    throw new Error('Not a valid human readable amount');
+  if (!value.match(/^\d+$/)) throw new Error('Not a valid human readable amount');
 
   const valueBN = BigInt(value);
-
   const millisatoshisBN = divisor
     ? (valueBN * MILLISATS_PER_BTC) / DIVISORS[divisor]
     : valueBN * MILLISATS_PER_BTC;
 
   if (
     (divisor === 'p' && !(valueBN % BigInt(10) === BigInt(0))) ||
-    millisatoshisBN > MAX_MILLISATS
+    millisatoshisBN > MAX_MILLISATS ||
+    millisatoshisBN < 0
   ) {
     throw new Error('Amount is outside of valid range');
   }
-  if (millisatoshisBN < 0) {
-    throw new Error('Amount is outside of valid range');
-  }
+
   return outputString ? millisatoshisBN.toString() : millisatoshisBN;
+}
+
+export {
+  DEFAULTNETWORK,
+  TESTNETWORK,
+  SIGNETNETWORK,
+  REGTESTNETWORK,
+  SIMNETWORK,
+  FEATUREBIT_ORDER,
+  DIVISORS,
+  MAX_MILLISATS,
+  MILLISATS_PER_BTC,
+  TAGCODES,
+  TAGNAMES,
+  TAGPARSERS,
+  getUnknownParser,
+  wordsToIntBE,
+  routingInfoParser,
+  featureBitsParser,
+  hrpToMillisat,
+};

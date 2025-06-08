@@ -1,4 +1,4 @@
-const { bech32, hex, utf8 } = require('@scure/base');
+import { bech32, hex, utf8 } from '@scure/base';
 
 // BOLT12-specific constants
 const TAGCODES = {
@@ -12,17 +12,17 @@ const TAGCODES = {
   invreq_metadata: 8,
   payment_hash: 3,
   description: 13,
-  issuer: 18, // New for BOLT12
-  quantity_min: 22, // Min quantity (e.g., for recurring offers)
-  quantity_max: 23, // Max quantity
-  recurrence: 25, // Recurrence rules
-  recurrence_paywindow: 26, // Payment window
-  recurrence_limit: 27, // Maximum recurrences
-  recurrence_base: 28, // Recurrence base (e.g., absolute start)
+  issuer: 18,
+  quantity_min: 22,
+  quantity_max: 23,
+  recurrence: 25,
+  recurrence_paywindow: 26,
+  recurrence_limit: 27,
+  recurrence_base: 28,
   fallback_address: 9,
   node_id: 6,
   signature: 16,
-  tutstanding: 24, // Total value locked (TVL) outstanding
+  tutstanding: 24,
 };
 
 // Reverse TAGCODES for decoding
@@ -33,18 +33,18 @@ for (const [key, value] of Object.entries(TAGCODES)) {
 
 // Tag parsers for BOLT12
 const TAGPARSERS = {
-  1: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // Offer ID
-  13: (words) => utf8.encode(bech32.fromWordsUnsafe(words)), // Description
-  18: (words) => utf8.encode(bech32.fromWordsUnsafe(words)), // Issuer
-  22: wordsToIntBE, // Quantity min
-  23: wordsToIntBE, // Quantity max
-  25: parseRecurrence, // Recurrence rules
-  26: parsePayWindow, // Payment window
-  27: wordsToIntBE, // Recurrence limit
-  28: parseRecurrenceBase, // Recurrence base
-  9: (words) => utf8.encode(bech32.fromWordsUnsafe(words)), // Fallback address
-  6: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // Node ID
-  16: (words) => hex.encode(bech32.fromWordsUnsafe(words)), // Signature
+  1: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  13: (words) => utf8.encode(bech32.fromWordsUnsafe(words)),
+  18: (words) => utf8.encode(bech32.fromWordsUnsafe(words)),
+  22: wordsToIntBE,
+  23: wordsToIntBE,
+  25: parseRecurrence,
+  26: parsePayWindow,
+  27: wordsToIntBE,
+  28: parseRecurrenceBase,
+  9: (words) => utf8.encode(bech32.fromWordsUnsafe(words)),
+  6: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
+  16: (words) => hex.encode(bech32.fromWordsUnsafe(words)),
 };
 
 // Helper Functions
@@ -80,19 +80,16 @@ function decode(offerRequest) {
   const prefix = decoded.prefix;
   let words = decoded.words;
 
-  // Parse tags without checking signatures
   while (words.length > 0) {
     const tagCode = words[0].toString();
     const tagName = TAGNAMES[tagCode] || 'unknown_tag';
     const parser = TAGPARSERS[tagCode] || ((w) => w);
     
-    words = words.slice(1); // Remove tag code
-
+    words = words.slice(1);
     const tagLength = wordsToIntBE(words.slice(0, 2));
-    words = words.slice(2); // Remove tag length
-
+    words = words.slice(2);
     const tagWords = words.slice(0, tagLength);
-    words = words.slice(tagLength); // Remove parsed words
+    words = words.slice(tagLength);
 
     sections.push({
       name: tagName,
@@ -103,6 +100,4 @@ function decode(offerRequest) {
   return { offerRequest, sections };
 }
 
-module.exports = {
-  decode,
-};
+export { decode };
